@@ -1,19 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export type PayloadStyle = 'snapshot' | 'thin';
-export type DestinationType = 'webhook_endpoint' | 'amazon_eventbridge' | 'azure_event_grid';
-
-export type EventType =
-  | 'payment.success'
-  | 'payment.failed'
-  | 'customer.created'
-  | 'customer.deleted'
-  | 'order.created'
-  | 'order.updated'
-  | 'order.cancelled'
-  | 'user.created'
-  | 'user.deleted'
-  | 'balance.available';
+export type DestinationType =
+  | 'webhook_endpoint'
+  | 'amazon_eventbridge'
+  | 'azure_event_grid';
 
 export interface IWebhook extends Document {
   userId: mongoose.Types.ObjectId;
@@ -21,7 +12,7 @@ export interface IWebhook extends Document {
   url: string;
   destinationType: DestinationType;
   payloadStyle: PayloadStyle;
-  events: EventType[];
+  events: string[];  // ✅ No enum — accepts any dot-notation string
   lastStatus: 'pending' | 'success' | 'failure';
   lastTriggeredAt: Date | null;
 }
@@ -41,21 +32,17 @@ const WebhookSchema = new Schema<IWebhook>(
       enum: ['snapshot', 'thin'],
       default: 'snapshot',
     },
+    // ✅ Dynamic — no enum restriction, unlimited custom events
     events: {
       type: [String],
-      enum: [
-        'payment.success',
-        'payment.failed',
-        'customer.created',
-        'customer.deleted',
-        'order.created',
-        'order.updated',
-        'order.cancelled',
-        'user.created',
-        'user.deleted',
-        'balance.available',
-      ],
       default: [],
+      validate: {
+        validator: (events: string[]) => {
+          // Validate dot notation format
+          return events.every((e) => /^[a-z0-9]+(\.[a-z0-9_]+)*$/.test(e));
+        },
+        message: 'Events must be in dot notation format e.g. payment.success',
+      },
     },
     lastStatus: {
       type: String,
