@@ -3,29 +3,25 @@ import { wss } from '../index';
 import { WebSocket } from 'ws';
 import Webhook from '../models/Webhook';
 import redisClient from '../config/redis';
+import { publisher, CHANNELS } from '../config/redisPubSub';
 import { invalidateCache } from './webhook.service';
 
-const broadcast = (payload: object) => {
-  const message = JSON.stringify(payload);
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
-    }
-  });
+// ✅ Now publishes to Redis instead of direct WebSocket
+const publishEvent = async (payload: object) => {
+  await publisher.publish(
+    CHANNELS.WEBHOOK_STATUS,
+    JSON.stringify(payload)
+  );
 };
 
-// Build payload based on style
 const buildPayload = (webhook: any, style: 'snapshot' | 'thin', event: string) => {
   if (style === 'thin') {
-    // ✅ Thin — minimal payload, just IDs and event type
     return {
       event,
       webhookId: webhook._id,
       triggeredAt: new Date(),
     };
   }
-
-  // ✅ Snapshot — full payload with all data
   return {
     event,
     webhookId: webhook._id,
@@ -50,10 +46,10 @@ export const triggerWebhook = async (
   const webhook = await Webhook.findOne({ _id: webhookId, userId });
   if (!webhook) throw new Error('Webhook not found');
 
-  // Use first registered event or provided event
   const triggerEvent = event || webhook.events[0] || 'manual.trigger';
 
-  broadcast({
+  // ✅ Publish sending status via Redis
+  await publishEvent({
     type: 'WEBHOOK_STATUS',
     webhookId,
     status: 'sending',
@@ -62,7 +58,6 @@ export const triggerWebhook = async (
 
   try {
     const payload = buildPayload(webhook, webhook.payloadStyle, triggerEvent);
-
     await axios.post(webhook.url, payload, { timeout: 10000 });
 
     webhook.lastStatus = 'success';
@@ -77,12 +72,14 @@ export const triggerWebhook = async (
 
     await invalidateCache(userId);
 
-    broadcast({
+    // ✅ Publish success via Redis
+    await publishEvent({
       type: 'WEBHOOK_STATUS',
       webhookId,
       status: 'success',
       message: `${webhook.name} delivered successfully! [${triggerEvent}]`,
     });
+
   } catch (error: any) {
     webhook.lastStatus = 'failure';
     webhook.lastTriggeredAt = new Date();
@@ -96,7 +93,8 @@ export const triggerWebhook = async (
 
     await invalidateCache(userId);
 
-    broadcast({
+    // ✅ Publish failure via Redis
+    await publishEvent({
       type: 'WEBHOOK_STATUS',
       webhookId,
       status: 'failure',

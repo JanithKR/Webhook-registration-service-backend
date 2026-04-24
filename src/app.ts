@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import webhookRoutes from './routes/webhook.routes';
+import eventTreeRoutes from './routes/eventTree.routes';
+
 
 dotenv.config();
 
@@ -22,5 +24,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', webhookRoutes);
+app.use('/api/events', eventTreeRoutes);
+
 
 export default app;
