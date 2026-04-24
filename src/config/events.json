@@ -1,0 +1,164 @@
+{
+  "payment": {
+    "label": "Payment Events",
+    "children": {
+      "success": {
+        "label": "Payment Success",
+        "children": {
+          "card": {
+            "label": "Card Payment",
+            "children": {}
+          },
+          "bank": {
+            "label": "Bank Transfer",
+            "children": {}
+          },
+          "wallet": {
+            "label": "Wallet Payment",
+            "children": {}
+          }
+        }
+      },
+      "failed": {
+        "label": "Payment Failed",
+        "children": {
+          "declined": {
+            "label": "Card Declined",
+            "children": {}
+          },
+          "expired": {
+            "label": "Card Expired",
+            "children": {}
+          },
+          "insufficient": {
+            "label": "Insufficient Funds",
+            "children": {}
+          }
+        }
+      },
+      "refunded": {
+        "label": "Payment Refunded",
+        "children": {}
+      },
+      "disputed": {
+        "label": "Payment Disputed",
+        "children": {}
+      }
+    }
+  },
+  "customer": {
+    "label": "Customer Events",
+    "children": {
+      "created": {
+        "label": "Customer Created",
+        "children": {}
+      },
+      "updated": {
+        "label": "Customer Updated",
+        "children": {}
+      },
+      "deleted": {
+        "label": "Customer Deleted",
+        "children": {}
+      },
+      "subscription": {
+        "label": "Subscription Events",
+        "children": {
+          "started": {
+            "label": "Subscription Started",
+            "children": {}
+          },
+          "cancelled": {
+            "label": "Subscription Cancelled",
+            "children": {}
+          },
+          "renewed": {
+            "label": "Subscription Renewed",
+            "children": {}
+          }
+        }
+      }
+    }
+  },
+  "order": {
+    "label": "Order Events",
+    "children": {
+      "created": {
+        "label": "Order Created",
+        "children": {}
+      },
+      "updated": {
+        "label": "Order Updated",
+        "children": {}
+      },
+      "cancelled": {
+        "label": "Order Cancelled",
+        "children": {}
+      },
+      "fulfillment": {
+        "label": "Fulfillment Events",
+        "children": {
+          "shipped": {
+            "label": "Order Shipped",
+            "children": {}
+          },
+          "delivered": {
+            "label": "Order Delivered",
+            "children": {}
+          },
+          "returned": {
+            "label": "Order Returned",
+            "children": {}
+          }
+        }
+      }
+    }
+  },
+  "user": {
+    "label": "User Events",
+    "children": {
+      "created": {
+        "label": "User Created",
+        "children": {}
+      },
+      "updated": {
+        "label": "User Updated",
+        "children": {}
+      },
+      "deleted": {
+        "label": "User Deleted",
+        "children": {}
+      },
+      "auth": {
+        "label": "Auth Events",
+        "children": {
+          "login": {
+            "label": "User Login",
+            "children": {}
+          },
+          "logout": {
+            "label": "User Logout",
+            "children": {}
+          },
+          "password_reset": {
+            "label": "Password Reset",
+            "children": {}
+          }
+        }
+      }
+    }
+  },
+  "balance": {
+    "label": "Balance Events",
+    "children": {
+      "available": {
+        "label": "Balance Available",
+        "children": {}
+      },
+      "updated": {
+        "label": "Balance Updated",
+        "children": {}
+      }
+    }
+  }
+}
