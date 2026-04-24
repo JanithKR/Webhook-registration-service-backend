@@ -57,6 +57,16 @@ const start = async () => {
     }
   });
 
+  await subscriber.subscribe(CHANNELS.WEBHOOK_EVENTS, (message) => {
+    try {
+      const parsed = JSON.parse(message);
+      console.log('📨 Redis Pub/Sub received:', parsed.type);
+      broadcastToAll(parsed);
+    } catch (err) {
+      console.error('Failed to parse pub/sub message:', err);
+    }
+  });
+
   // ✅ Subscribe to event tree updates channel
   await subscriber.subscribe(CHANNELS.EVENT_TREE, (message) => {
     try {
